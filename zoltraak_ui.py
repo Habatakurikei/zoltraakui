@@ -23,6 +23,7 @@ USER_COMPILER_LOCATION = 'user_compiler'
 
 FORMATTER_NOT_USED = '使わない'
 GENERATED_MD_COMMENT = '魔法術式を構築しました'
+SKIP_COMMENT = 'を構築中'
 
 
 process = None
@@ -203,30 +204,12 @@ def _markdown_command(command_list):
     return command_md
 
 
-def _find_generated_file(process):
-    '''
-    Return generated md file name from stdout.
-    '''
-    stdout, stderr = process.communicate()
-
-    print(f'STDOUT = {stdout.decode("utf-8")}')
-    print(f'STDERR = {stderr.decode("utf-8")}')
-
-    generated_file = ''
-
-    if any(stdout):
-
-        source = stdout.decode('utf-8')
-
-        for line in source.split('\n'):
-            if GENERATED_MD_COMMENT in line:
-                generated_file = line.split(':')[1]
-                generated_file = generated_file.split('.md')[0]
-                generated_file = generated_file.replace(' ', '')
-                generated_file += '.md'
-                break
-
-    return generated_file
+def _find_requirement_file(source):
+    candidate_requirement = source.split(':')[1]
+    candidate_requirement = candidate_requirement.split('.md')[0]
+    candidate_requirement = candidate_requirement.replace(' ', '')
+    candidate_requirement += '.md'
+    return candidate_requirement
 
 
 def _seek_code_path():
@@ -412,9 +395,23 @@ if st.sidebar.button('生成', key='call'):
         st.write(st.session_state.command)
 
         process = Popen(to_call, shell=False, stdout=PIPE, stderr=PIPE)
-        process.wait()
+        # process.wait()
+        while True:
+            line = process.stdout.readline()
 
-        st.session_state.generated_requirement = _find_generated_file(process)
+            if not line and process.poll() is not None:
+                break
+
+            elif GENERATED_MD_COMMENT in line.decode('utf-8'):
+                generated_file = _find_requirement_file(line.decode('utf-8'))
+                st.session_state.generated_requirement = generated_file
+
+            elif SKIP_COMMENT in line.decode('utf-8'):
+                pass
+
+            else:
+                st.write(line.decode('utf-8'))
+
         st.session_state.code_path = _seek_code_path()
 
         print(f'Found file as {st.session_state.generated_requirement}')
