@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import site
@@ -20,10 +21,13 @@ PREFIX_REQUIREMENT = 'def_'
 ZIP_LOCATION = 'zip'
 CODE_FOLDER = 'code'
 USER_COMPILER_LOCATION = 'user_compiler'
+COMPILERS_DESCRIPTION_LOCATION = 'compilers_description.json'
 
+COMPILER_NOT_SELECTED = 'おまかせ'
 FORMATTER_NOT_USED = '使わない'
 GENERATED_MD_COMMENT = '魔法術式を構築しました'
 SKIP_COMMENT = 'を構築中'
+DESCRIPTION_NOT_FOUND = '説明文が見つかりませんでした。'
 
 
 process = None
@@ -41,6 +45,9 @@ def _initialize():
 
     if 'grimoires_path' not in st.session_state:
         st.session_state.grimoires_path = _find_grimoires_path()
+
+    if 'compilers_description' not in st.session_state:
+        st.session_state.compilers_description = _load_compliers_description()
 
     if 'compiler_list' not in st.session_state:
         st.session_state.compiler_list = _list_default_compilers()
@@ -94,6 +101,33 @@ def _find_grimoires_path():
     return None
 
 
+def _load_compliers_description():
+    '''
+    Return dictionary of default compilers description.
+    '''
+    if os.path.isfile(COMPILERS_DESCRIPTION_LOCATION):
+        with open(COMPILERS_DESCRIPTION_LOCATION, 'r', encoding='utf-8') as f:
+            json_text = f.read()
+        return json.loads(json_text)
+
+    return {}
+
+
+def _write_compiler_description():
+
+    description = ''
+
+    if (st.session_state.default_compiler in
+       st.session_state.compilers_description):
+        key = st.session_state.default_compiler
+        description = f'> {st.session_state.compilers_description[key]}'
+
+    else:
+        description = f'> {DESCRIPTION_NOT_FOUND}'
+
+    return description
+
+
 def _list_default_compilers():
     '''
     Return list of default compilers.
@@ -104,6 +138,8 @@ def _list_default_compilers():
     full_list = sorted(os.listdir(to_seek))
 
     md_files = [i.replace('.md', '') for i in full_list if i.endswith('.md')]
+
+    md_files.insert(0, COMPILER_NOT_SELECTED)
 
     return md_files
 
@@ -168,9 +204,12 @@ def _add_option_commands():
 
     command_list = []
 
-    if not any(st.session_state.user_compiler):
+    if st.session_state.default_compiler == COMPILER_NOT_SELECTED:
+        pass
+
+    elif not any(st.session_state.user_compiler):
         command_list.append('-c')
-        command_list.extend(st.session_state.default_compiler)
+        command_list.append(st.session_state.default_compiler)
 
     else:
         _upload_user_compiler()
@@ -357,10 +396,10 @@ if st.session_state.grimoires_path is None:
 
 st.session_state.prompt = st.sidebar.text_area('プロンプト')
 
-st.session_state.default_compiler = st.sidebar.multiselect(
-    '標準コンパイラ',
-    st.session_state.compiler_list,
-    default=None)
+st.session_state.default_compiler = st.sidebar.selectbox(
+    '標準コンパイラ', st.session_state.compiler_list)
+
+st.sidebar.markdown(_write_compiler_description())
 
 st.session_state.formatter = st.sidebar.selectbox(
     'フォーマッター',
@@ -377,6 +416,7 @@ st.session_state.user_compiler = _find_user_compiler()
 st.session_state.language = st.sidebar.text_input('使用言語')
 
 # print for debug purpose
+print(f'descriptions = {st.session_state.compilers_description}')
 print(f'prompt = {st.session_state.prompt}')
 print(f'default_compiler = {st.session_state.default_compiler}')
 print(f'formatter = {st.session_state.formatter}')
