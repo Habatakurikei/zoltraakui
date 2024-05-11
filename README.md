@@ -6,7 +6,7 @@ https://github.com/dai-motoki/zoltraak
 
 ## どんなアプリ？
 
-[Demo](https://github.com/dai-motoki/zoltraak/assets/131997581/f17e2b12-5ba6-41e1-9de3-03a629bf9198)
+[デモ動画](https://github.com/dai-motoki/zoltraak/assets/131997581/f17e2b12-5ba6-41e1-9de3-03a629bf9198)
 
 Zoltraak UI は非エンジニア系のユーザーさんがコマンド不要で Zoltraak を使えるようにするためのウェブアプリです。
 
@@ -149,11 +149,11 @@ Zoltraak であらかじめ用意されているものを「標準コンパイ�
 
 **iPhone で使ってみる**
 
-[Demo SP](https://github.com/dai-motoki/zoltraak/assets/131997581/080f618c-7422-42b1-bc6a-e0e642e633c8)
+[iPhone デモ動画](https://github.com/dai-motoki/zoltraak/assets/131997581/080f618c-7422-42b1-bc6a-e0e642e633c8)
 
 **生成途中過程も表示（開発中の画面）**
 
-[Demo Progress](https://github.com/dai-motoki/zoltraak/assets/131997581/1f4b9ff7-1a9e-447e-aceb-a8e3c8ae80e9)
+[生成過程も表示されるデモ動画](https://github.com/dai-motoki/zoltraak/assets/131997581/1f4b9ff7-1a9e-447e-aceb-a8e3c8ae80e9)
 
 ## 背景を最後に少しだけ
 
