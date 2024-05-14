@@ -3,14 +3,20 @@ import os
 import shutil
 import site
 from io import StringIO
+from subprocess import check_output
 from subprocess import Popen
 from subprocess import PIPE
 
 import streamlit as st
 
 
-COMMAND = 'zoltraak'
+COMMAND_CAST = 'zoltraak'
+COMMAND_VERSION = ['zoltraak', '-v']
+
 UI_TITLE = 'Zoltraak'
+
+APP_GUIDE_PAGE = 'https://github.com/Habatakurikei/zoltraak_ui'
+APP_GUIDE_LINK = f'初めてですか？ &#10697;[アプリ紹介と使い方]({APP_GUIDE_PAGE})'
 
 GRIMOIRES_LOCATION = 'zoltraak/grimoires'
 DEFAULT_COMPILER_LOCATION = 'compiler'
@@ -35,7 +41,16 @@ process = None
 
 # Supporting functions
 
+def _get_zoltraak_version():
+    response = check_output(COMMAND_VERSION)
+    response = response.decode('utf-8').replace('\n', '')
+    return response
+
+
 def _initialize():
+
+    if 'zoltraak_version' not in st.session_state:
+        st.session_state.zoltraak_version = _get_zoltraak_version()
 
     if not os.path.isdir(ZIP_LOCATION):
         os.mkdir(ZIP_LOCATION)
@@ -176,7 +191,7 @@ def _make_first_command():
     '''
     Make command line based on different options applied.
     '''
-    command_list = [COMMAND, f'\"{st.session_state.prompt}\"']
+    command_list = [COMMAND_CAST, f'\"{st.session_state.prompt}\"']
 
     if (any(st.session_state.default_compiler) or
        any(st.session_state.user_compiler)):
@@ -191,7 +206,7 @@ def _make_refine_command():
     '''
     source = st.session_state.generated_requirement
 
-    command_list = [COMMAND, source, '-p', f'\"{st.session_state.prompt}\"']
+    command_list = [COMMAND_CAST, source, '-p', f'\"{st.session_state.prompt}\"']
 
     if (any(st.session_state.default_compiler) or
        any(st.session_state.user_compiler)):
@@ -394,6 +409,8 @@ if st.session_state.grimoires_path is None:
     st.error(message)
     st.stop()
 
+st.sidebar.write(APP_GUIDE_LINK)
+
 st.session_state.prompt = st.sidebar.text_area('プロンプト')
 
 st.session_state.default_compiler = st.sidebar.selectbox(
@@ -435,7 +452,7 @@ if st.sidebar.button('生成', key='call'):
         st.write(st.session_state.command)
 
         process = Popen(to_call, shell=False, stdout=PIPE, stderr=PIPE)
-        # process.wait()
+
         while True:
             line = process.stdout.readline()
 
@@ -457,3 +474,5 @@ if st.sidebar.button('生成', key='call'):
         print(f'Found file as {st.session_state.generated_requirement}')
 
         st.rerun()
+
+st.sidebar.write(f'Powered with {st.session_state.zoltraak_version}')
