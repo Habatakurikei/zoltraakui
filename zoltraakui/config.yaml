@@ -1,0 +1,28 @@
+zoltraak:
+  cast_command: zoltraak
+  version_command: [zoltraak, -v]
+
+ui:
+  guide_link: https://github.com/Habatakurikei/zoltraak_ui
+  title: Zoltraak
+
+paths:
+  codes: generated
+  default_compilers: compiler
+  formatters: formatter
+  grimoires: zoltraak/grimoires
+  user_compiler: user_compiler
+  zip: zip
+
+files:
+  default_compilers_description: compilers_description.json
+
+constants:
+  compiler_not_selected: おまかせ
+  description_not_found: 説明文が見つかりませんでした。
+  formatter_not_used: 使わない
+  generated_md_comment: 魔法術式を構築しました
+  make_dir_no: いいえ（要件定義書のみ生成）
+  make_dir_yes: はい（要件定義書＋ディレクトリ／関連コード生成）
+  prefix_requirement: def_
+  skip_comment: を構築中
