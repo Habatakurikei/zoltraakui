@@ -8,7 +8,8 @@ from logging.handlers import RotatingFileHandler
 BACKUP_COUNT = 5
 MAX_BYTES = 1000000
 
-DIR_LIST = ['generated', 'requirements', 'user_compiler', 'zip']
+DIR_LIST = ['generated', 'generated/requirements', 'requirements',
+            'user_compiler', 'zip']
 LOG_LOCATION = 'log/zoltraak_file_cleaner.log'
 
 TIME_TORELANCE = 3600
@@ -61,15 +62,19 @@ class ZoltraakFileCleaner:
 
         for candidate in sorted(os.listdir(target_dir)):
 
-            time_diff = time_now - os.path.getctime(candidate)
+            focus = os.path.join(target_dir, candidate)
+            time_diff = time_now - os.path.getctime(focus)
 
             if 'requirements' in candidate:
                 pass
 
             elif TIME_TORELANCE < time_diff:
-                msg = f'Delete {candidate}, Time Diff = {time_diff}'
+                if os.path.isdir(focus):
+                    shutil.rmtree(focus)
+                else:
+                    os.remove(focus)
+                msg = f'Deleted {focus}, Time Diff = {time_diff:.3f}'
                 self.logger.write_info(msg)
-                shutil.rmtree(candidate)
 
     def loop(self):
 
@@ -87,12 +92,12 @@ class ZoltraakFileCleaner:
             elapsed_time = time.time() - start_time
 
             msg = f'loop: elapsed time (sec) = {elapsed_time:.3f}'
-            self.logger.debug(msg)
+            self.logger.write_debug(msg)
 
             time_to_sleep = INTERVAL_SEC - elapsed_time
 
             msg = f'loop: sleep for {time_to_sleep:.3f} sec'
-            self.logger.debug(msg)
+            self.logger.write_debug(msg)
 
             time.sleep(time_to_sleep)
 
