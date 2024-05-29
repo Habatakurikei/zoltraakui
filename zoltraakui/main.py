@@ -177,8 +177,7 @@ def _process_sidebar():
         ':star2: 領域術式も実行しますか？',
         st.session_state.directry_options,
         index=0,
-        horizontal=False,
-        on_change=st.rerun)
+        horizontal=False)
 
     # print for debug purpose
     print('Parameters for Debug')
