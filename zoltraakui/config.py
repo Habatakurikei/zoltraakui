@@ -28,32 +28,20 @@ def find_grimoires_path():
     return None
 
 
-def list_default_compilers():
+def load_default_compilers():
     '''
-    Return list of default compilers.
-    '''
-    to_seek = os.path.join(grimoires_path,
-                           config['paths']['default_compilers'])
-
-    full_list = sorted(os.listdir(to_seek))
-
-    md_files = [i.replace('.md', '') for i in full_list if i.endswith('.md')]
-
-    md_files.insert(0, config['constants']['compiler_not_selected'])
-
-    return md_files
-
-
-def load_compilers_description():
-    '''
-    Return dictionary of default compilers description.
+    Return dictionary information of default compilers.
     '''
     to_load = config['files']['default_compilers_description']
+    dict_compilers = {}
+
     if os.path.isfile(to_load):
         with open(to_load, 'r', encoding='utf-8') as f:
             json_text = f.read()
-        return json.loads(json_text)
-    return {}
+
+        dict_compilers = json.loads(json_text)
+
+    return dict_compilers
 
 
 def list_formatters():
@@ -72,9 +60,25 @@ def list_formatters():
     return md_files
 
 
+def list_llms():
+    llm_list = []
+    llm_list.append(config['llms']['gpt'])
+    llm_list.append(config['llms']['claude'])
+    llm_list.append(config['llms']['gemini'])
+    return llm_list
+
+
+def make_domain_options():
+    option_list = []
+    option_list.append(config['constants']['make_dir_no'])
+    option_list.append(config['constants']['make_dir_yes'])
+    return option_list
+
+
 config = load_config()
 zoltraak_version = fetch_zoltraak_version()
 grimoires_path = find_grimoires_path()
-compiler_list = list_default_compilers()
-compilers_description = load_compilers_description()
+dict_default_compilers = load_default_compilers()
 formatter_list = list_formatters()
+llm_list = list_llms()
+domain_option_list = make_domain_options()

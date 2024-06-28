@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 from io import StringIO
 
@@ -29,6 +30,29 @@ def upload_user_compiler(uploaded_object):
 
         with open(save_as, 'w', encoding='utf-8') as f:
             f.write(stringio.read())
+
+
+def sanitize_prompt(prompt_org):
+    sanitized_prompt = re.sub(r'\s+', ' ', prompt_org)
+    sanitized_prompt = sanitized_prompt.replace(r'\n', '')
+    sanitized_prompt = sanitized_prompt.replace(r'\r', '')
+    sanitized_prompt = sanitized_prompt.replace(' ', r'\u0020')
+    return sanitized_prompt.strip()
+
+
+def eligible_to_expand_domain(selected_compiler):
+    '''
+    Return if domain expansion option to add for given compiler
+    '''
+    ans = False
+
+    buff = config['constants']['eligible_compilers_to_expand']
+    list_eligible_compilers = buff.split('/')
+
+    if selected_compiler in list_eligible_compilers:
+        ans = True
+
+    return ans
 
 
 def delete_user_compiler(uploaded_object):

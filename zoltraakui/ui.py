@@ -1,4 +1,6 @@
 import os
+import random
+from datetime import datetime as dt
 
 import streamlit as st
 
@@ -15,7 +17,7 @@ def set_page_title():
 
 
 def stop_ui():
-    msg = 'グリモワール（標準コンパイラ）のフォルダを見つけることができませんでした。'
+    msg = '標準コンパイラ（魔導書）のフォルダを見つけることができませんでした。'
     msg += 'Zoltraakが正しくインストールされているか確認してください。'
     st.error(msg)
     st.stop()
@@ -40,26 +42,58 @@ def markdown_requirement(to_load):
         st.write(f':orange_book: `{to_load}`')
 
         with open(to_load, 'r', encoding='utf-8') as f:
-            st.markdown(f.read())
+            st.code(f.read(), language='markdown')
 
 
-def fetch_compiler_description(description_dictionary, selected_compiler):
+def markdown_zip(to_load):
+    '''
+    Notify if zip file generated
+    '''
+    if any(to_load):
+        msg = f':package: `{to_load}` 生成物が Zip 形式として '
+        msg += '**:red[ポン出し]** されています。'
+        st.write(msg)
 
+
+def fetch_compiler_information(dict_description, selected_compiler):
+    '''
+    Return compiler key and description respectively from selected compiler
+    '''
+    key = ''
     description = ''
 
-    if selected_compiler in description_dictionary:
-        description = f'> {description_dictionary[selected_compiler]}'
+    if selected_compiler in dict_description:
+        key = dict_description[selected_compiler]['compiler']
+        description = f'> {dict_description[selected_compiler]["description"]}'
 
     else:
         description = f'> {config["constants"]["description_not_found"]}'
 
-    return description
+    return key, description
+
+
+def write_domain_warning():
+    msg = '指定されたコマンドでは領域展開を省略します。ご了承ください。'
+    st.warning(msg)
+
+
+def print_command(command_list):
+    command_text = ' '.join(command_list)
+    time_stamp = dt.now().isoformat(timespec='seconds')
+    print(f'cmd {time_stamp} - {command_text}')
 
 
 def markdown_command(command_list):
     command_text = ' '.join(command_list)
     msg = f':male_mage: あなたは`{command_text}`を唱えた！'
     st.write(msg)
+
+
+def show_progress_image():
+    if random.randint(0, 1) % 2 == 0:
+        st.image(config['files']['progress_image_even'], use_column_width=True)
+    else:
+        st.image(config['files']['progress_image_odd'], use_column_width=True)
 
 
 def generate_download_button(generated_requirement):

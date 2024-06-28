@@ -11,15 +11,25 @@ paths:
   default_compilers: compiler
   formatters: formatter
   grimoires: zoltraak/grimoires
+  llms: llms
   user_compiler: user_compiler
   zip: zip
 
+llms:
+  claude: anthropic/claude-3-5-sonnet-20240620
+  gemini: google/gemini-1.5-flash
+  gpt: openai/gpt-4o
+
 files:
   default_compilers_description: compilers_description.json
+  eyecatch: img/zoltraak-eyecatch.png
+  progress_image_even: img/boy-casting.gif
+  progress_image_odd: img/girl-casting.gif
 
 constants:
-  compiler_not_selected: おまかせ
+  compiler_not_selected: おすすめを尋ねる
   description_not_found: 説明文が見つかりませんでした。
+  eligible_compilers_to_expand: book_epub/presentation_reveal/dev_sw/dev_hp
   formatter_not_used: 使わない
   generated_md_comment: 魔法術式を構築しました
   make_dir_no: いいえ（要件定義書のみ生成）

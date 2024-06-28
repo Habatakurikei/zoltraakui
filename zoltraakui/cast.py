@@ -2,9 +2,12 @@ from subprocess import PIPE
 from subprocess import Popen
 
 from config import config
+from ui import write_domain_warning
 from ui import write_progress
+from utils import eligible_to_expand_domain
 from utils import find_requirement_file
 from utils import find_user_compiler
+from utils import sanitize_prompt
 from utils import upload_user_compiler
 
 
@@ -13,7 +16,7 @@ def make_first_command(prompt):
     Make command line based on different options applied.
     '''
     command_list = [config['zoltraak']['cast_command']]
-    command_list.append(f'\"{prompt}\"')
+    command_list.append(f'\"{sanitize_prompt(prompt)}\"')
     return command_list
 
 
@@ -23,7 +26,7 @@ def make_refine_command(source, prompt):
     source: markdown/directry path as source
     '''
     command_list = [config['zoltraak']['cast_command'], source, '-p']
-    command_list.append(f'\"{prompt}\"')
+    command_list.append(f'\"{sanitize_prompt(prompt)}\"')
     return command_list
 
 
@@ -31,7 +34,8 @@ def make_option_commands(default_compiler,
                          uploaded_object,
                          formatter,
                          language,
-                         to_make_directry):
+                         llm,
+                         to_expand_domain):
     '''
     Arrange options for base command based on given parameters.
     '''
@@ -61,8 +65,16 @@ def make_option_commands(default_compiler,
         command_list.append('-l')
         command_list.append(language)
 
-    if to_make_directry == config['constants']['make_dir_yes']:
-        command_list.append('-d')
+    command_list.append('-m')
+    command_list.append(llm)
+
+    if to_expand_domain == config['constants']['make_dir_yes']:
+        if uploaded_object is not None:
+            command_list.append('-d')
+        elif eligible_to_expand_domain(default_compiler):
+            command_list.append('-d')
+        else:
+            write_domain_warning()
 
     return command_list
 
@@ -77,27 +89,23 @@ def cast_zoltraak(command_list):
 
     keyword = config['constants']['generated_md_comment']
 
-    process = Popen(command_list, shell=False, stdout=PIPE, stderr=PIPE)
+    process = Popen(command_list, shell=False, stdout=PIPE, stderr=None)
 
-    while True:
+    for line in iter(process.stdout.readline, b""):
 
-        line = process.stdout.readline()
+        line = line.rstrip().decode('utf-8')
 
-        if not line and process.poll() is not None:
-            break
-
-        elif config['constants']['skip_comment'] in line.decode('utf-8'):
+        if config['constants']['skip_comment'] in line:
             pass
 
-        elif keyword in line.decode('utf-8'):
-            generated_file = find_requirement_file(line.decode('utf-8'))
+        elif keyword in line:
+            generated_file = find_requirement_file(line)
 
         else:
-            write_progress(line.decode('utf-8'))
+            write_progress(line)
 
-    stdout, stderr = process.communicate()
-
-    print(f'STDOUT = {stdout.decode("utf-8")}')
-    print(f'STDERR = {stderr.decode("utf-8")}')
+    # stdout, stderr = process.communicate()
+    # print(f'STDOUT = {stdout.decode("utf-8")}')
+    # print(f'STDERR = {stderr.decode("utf-8")}')
 
     return generated_file

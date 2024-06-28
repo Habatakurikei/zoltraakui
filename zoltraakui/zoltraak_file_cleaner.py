@@ -1,60 +1,23 @@
-import logging
 import os
 import shutil
 import time
-from logging.handlers import RotatingFileHandler
 
+from logger import PythonLogger
 
-BACKUP_COUNT = 5
-MAX_BYTES = 1000000
 
 DIR_LIST = ['generated', 'generated/requirements', 'requirements',
             'user_compiler', 'zip']
-LOG_LOCATION = 'log/zoltraak_file_cleaner.log'
+
+LOG_FILE = 'zoltraak_file_cleaner.log'
 
 TIME_TORELANCE = 3600
 INTERVAL_SEC = 3600
 
 
-class DYLogger:
-
-    def __init__(self, save_as=None):
-
-        self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
-
-        self.handler = RotatingFileHandler(filename=save_as,
-                                           maxBytes=MAX_BYTES,
-                                           backupCount=BACKUP_COUNT)
-
-        log_format = '[%(levelname)s][%(asctime)s] %(message)s'
-
-        self.handler.setLevel(logging.DEBUG)
-        self.handler.setFormatter(logging.Formatter(log_format))
-
-        self.logger.addHandler(self.handler)
-
-        self.logger.info('DYLogger: logger opened')
-
-    def write_debug(self, message):
-        self.logger.debug(message)
-
-    def write_info(self, message):
-        self.logger.info(message)
-
-    def write_error(self, message):
-        self.logger.error(message)
-
-    def __del__(self):
-        self.logger.info('DYLogger: close logger')
-        self.handler.close()
-        self.logger.removeHandler(self.handler)
-
-
 class ZoltraakFileCleaner:
 
     def __init__(self):
-        self.logger = DYLogger(LOG_LOCATION)
+        self.logger = PythonLogger(save_as=LOG_FILE)
 
     def _cleanup_folder(self, target_dir):
 
@@ -65,16 +28,22 @@ class ZoltraakFileCleaner:
             focus = os.path.join(target_dir, candidate)
             time_diff = time_now - os.path.getctime(focus)
 
-            if 'requirements' in candidate:
-                pass
+            msg = f'File {focus}, Diff = {time_diff:.3f} ? {TIME_TORELANCE} '
+
+            if os.path.isdir(candidate):
+                msg += '>> FOLDER SKIP'
 
             elif TIME_TORELANCE < time_diff:
                 if os.path.isdir(focus):
                     shutil.rmtree(focus)
                 else:
                     os.remove(focus)
-                msg = f'Deleted {focus}, Time Diff = {time_diff:.3f}'
-                self.logger.write_info(msg)
+                msg += '>> DELETED'
+
+            else:
+                msg += '>> NOT deleted'
+
+            self.logger.write_info(msg)
 
     def loop(self):
 
@@ -87,7 +56,11 @@ class ZoltraakFileCleaner:
 
             for entry in DIR_LIST:
                 self.logger.write_info(f'loop: target = {entry}')
-                self._cleanup_folder(entry)
+                if os.path.isdir(entry):
+                    self._cleanup_folder(entry)
+                else:
+                    msg = f'loop: folder {entry} not existed. Skipped.'
+                    self.logger.write_error(msg)
 
             elapsed_time = time.time() - start_time
 
