@@ -1,182 +1,79 @@
-# あなたの「作りたい」をほぼクリックだけでカタチにするアプリです
+![Showcase of zoltraakui](https://github.com/user-attachments/assets/8e06fa72-8e9b-4c7e-8eae-8b3d009765ea)
 
-このページは ***創造魔法 Zoltraak*** を補足するものです。
+# Web User Interface for Zoltraak
 
-https://github.com/dai-motoki/zoltraak
+Boost Your Creativity with Zoltraak
 
-## どんなアプリ？
+zoltraakui is a Streamlit-based user interface for the ZoltraakKlein project generator.
 
-[デモ動画](https://github.com/dai-motoki/zoltraak/assets/131997581/f17e2b12-5ba6-41e1-9de3-03a629bf9198)
+With a short request, you can generate various digital contents including code, images, audio, video, and more. The types covers business documents, multimedia contents like books, presentations with speech, web pages, and more.
 
-Zoltraak UI は非エンジニア系のユーザーさんがコマンド不要で Zoltraak を使えるようにするためのウェブアプリです。
+Access to an instance is here: [https://zoltraak.app/](https://zoltraak.app/)
 
-## 何ができるの？
+See old document in Japanese [README_JA.md](https://github.com/Habatakurikei/zoltraakui/blob/main/README_JA.md).
 
-あなたの短い言葉の指示（プロンプト）から「ウェブページやコード生成のための要件定義書」、「企画書」、「事業計画書」、「各種指示書」などの生成、書籍執筆などができます。
+## Features
 
-用途はまだまだ拡張中です。
+- Select what you want to create from multiple compiler options categorized by type
+- Input project requirements as a short sentence instead of writing a long prompt, and generate project structures
+- View generated outputs including code, images, audio, video, and more
+- Download generated project files as a zip archive
 
-## 目次
+This app is a part of Zoltraak project. See full list of features in [Zoltraak Klein](https://github.com/Habatakurikei/zoltraakklein).
 
-- [画面説明](#画面説明)
-- [文章説明](#文章説明)
-    - プロンプト
-    - 標準コンパイラ
-    - 自作コンパイラ
-    - フォーマッター（オプション）
-    - 言語指定（オプション）
-    - 領域展開
-    - 注意点
-- [例えばこのようなものが作れます](#例えばこのようなものが作れます)
-- [スマホからも使えます](#スマホからも使えます)
-- [背景を最後に少しだけ](#背景を最後に少しだけ)
+## Installation
 
-## 画面説明
+1. Clone the repository:
+   ```
+   git clone https://github.com/Habatakurikei/zoltraakui.git
+   cd zoltraakui
+   ```
 
-**初期画面**
-![初期画面](https://github.com/Habatakurikei/zoltraak_ui/assets/131997581/61fcb7b3-6912-4779-8726-2d7beee12546)
+2. Create a virtual environment (optional but recommended):
+   ```
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
 
-**生成後の画面**
-![生成後の画面](https://github.com/Habatakurikei/zoltraak_ui/assets/131997581/ecc29b8a-106b-4cbe-a13e-d5337bd99146)
+3. Install the required dependencies:
+   ```
+   pip install streamlit==1.37.1 zoltraakklein==1.0.3
+   ```
 
-## 文章説明
+## Usage
 
-生成前の操作はサイドバーで行います。下記の手順で何か作ってみましょう。
+![Main Screen of zoltraakui](https://github.com/user-attachments/assets/6f0ef7a1-cd12-4712-af37-4a71a234b6d5)
 
-1. あなたの指示（プロンプト）を入力
-2. コンパイラを指定（標準コンパイラ、自作コンパイラ、または使わない）
-3. 必要に応じてフォーマッターを指定（オプション）
-4. 必要に応じて言語指定（オプション）
-5. 領域展開をするかしないか選択
-6. 生成ボタンをクリック
-7. 数十秒待ったらドキュメントがメイン画面に表示されます
+1. Run the Streamlit app:
+   ```
+   streamlit run main.py
+   ```
+2. Open your web browser and navigate to the provided URL (usually `http://localhost:8501`)
+3. Select a compiler category and specific compiler from the sidebar
+4. Input your request on a pop-up window
+5. Generate the initial project structure includeing name and requirements definition
+6. Optionally perform domain expansions to generate more digital contents based on the requirements definition
+7. View and download the generated outputs
 
-生成後の操作はメイン画面で行います。生成されたドキュメントの下にボタンが現れます。各ボタンはこのように動作します。
+## Project Structure
 
-- **ダウンロード**：下記の形式で生成したドキュメントをダウンロードできます。
-    - ドキュメント単体が生成された場合：マークダウン形式 (*.md)
-    - コードを含めて生成した場合：圧縮ファイル (*.zip)
-- **結果を消去**：生成したドキュメントを消去します。
-- **プロンプトを基に修正**：ドキュメントを加筆修正したい場合はプロンプト欄に新たに修正指示を入力し、このボタンをクリックすることで加筆修正が始まります。
+- `main.py`: The main Streamlit application entry point
+- `ui_body.py`: Functions for rendering the main content of the UI
+- `ui_sidebar.py`: Functions for rendering the sidebar content
+- `ui_tabs.py`: Functions for rendering various output tabs in showcase
+- `utils.py`: Utility functions for project generation and management
+- `config.py`: Configuration settings
 
-> [!NOTE]
-> 消去したドキュメントはサーバーからも削除されるため、あなたの生成物は残りません。
+## Dependencies
 
-> [!WARNING]
-> 加筆修正した場合は元のデータが失われます。修正前に一度生成物を保存されることをお勧めします。
+- Python 3.9+
+- Streamlit 1.37.1
+- ZoltraakKlein 1.0.3
 
-### プロンプト
+## Contributing
 
-あなたのやりたいことまたは作りたいものを入力してください。細かな入力をせず大まかな指示をしてみましょう。
+Any contributions are welcome.
 
-このページの例題にあなたがやりたいことのヒントがあるかもしれません。
+## License
 
-### 標準コンパイラ
-
-コンパイラとはあなたのやりたいことを実現するため、細かい生成内容が書かれたテンプレートです。 Zoltraak では魔導書（グリモワール）と呼ばれています。
-
-あなたの指示とコンパイラをセットで大規模言語モデル AI (LLM) に渡してドキュメント生成を行います。
-
-Zoltraak であらかじめ用意されているものを「標準コンパイラ」と呼び、現在下記のものが利用できます。この中からひとつを選択してください。
-
-- おまかせ: おまかせの場合は最も適切と思われるプロンプトコンパイラを 5 つ自動でピックアップしてご提案します
-- biz_consult: ビジネスコンサルティングに関するドキュメントを生成します
-- book_lecture_main: 一般的な書籍について、たたき台を生成します
-- book_lecture_quiz: クイズとその予備知識を含む書籍について、たたき台を生成します
-- dev_akirapp: 2024年現在でベストプラクティスなアーキテクチャを使用してMVPを作成するための要件定義書を生成します
-- dev_aws: AWSアーキテクチャ開発タスクに関する要件定義書を生成します
-- dev_front: フロントエンド開発タスクに関する要件定義書を生成します
-- dev_func: 関数型プログラミングを用いた開発タスクに関する要件定義書を生成します
-- dev_obj: オブジェクト指向設計を用いた開発タスクに関する要件定義書を生成します
-- dev_obj_lisp: Lisp で暗号化します
-- dev_obj_lisp_g: Lisp + ギリシャ語で暗号化します
-- dev_obj_lisp_g_base64: Lisp + ギリシャ語 + Base64 で暗号化します
-- dev_obj_mermaid: オブジェクト指向設計（マーメイド記法を含む）を用いた開発タスクに関する要件定義書を生成します
-- dev_pypi: PyPI パッケージ開発のための要件定義書を生成します
-- dev_react_fastapi: React + FastAPI を用いた開発タスクに関する要件定義書を生成します
-- dev_reveal_rite: Reveal.js を用いたプレゼンテーション資料作成の要件定義を生成します（お勧め厳密版）
-- dev_reveal_strict: Reveal.js を用いたプレゼンテーション資料作成の要件定義を生成します（簡易版）
-- dev_streamlit: Streamlit ウェブアプリ開発タスクに関する要件定義書を生成します
-- dev_streamlit_mini: 超最低限の Streamlit ウェブアプリ開発タスクに関する要件定義書を生成します
-- encode_lisp: 指定した要件定義書を Lisp 形式（中身は単語）で出力します
-- front_faq: ウェブページの全体構成についての要件定義書を生成します
-- front_hp: ウェブページのよくある質問 (FAQ) 部分に特化した要件定義書を生成します
-- general_def: 一般的な開発タスクに関する要件定義書を生成します
-- general_reqdef: 一般的な要求事項に関する要件定義書を生成します
-
-### 自作コンパイラ
-
-標準コンパイラではなくあなたの自作コンパイラがある場合、アップロードしてカスタムドキュメントやコードを生成することができます。
-
-マークダウン形式のコンパイラのみアップロードできます。標準コンパイラとの併用はできません。
-
-ドキュメントを生成後、メイン画面にて「結果を消去」ボタンをクリックすることで自作コンパイラデータもサーバーから消去されます。サーバー側にデータは残りません。
-
-### フォーマッター（オプション）
-
-書式を指定します。日本語以外の他言語で要件定義書を生成したい場合はこのリストから選択します。ほとんどのケースでは指定不要です。
-
-特定のプログラミング言語のコードを生成したい場合は言語指定オプションで指定したほうが便利です。
-
-### 言語指定（オプション）
-
-フォーマッターでどれを指定してよいかわからない場合はこの入力欄で言語指定ができます。
-
-外国語だけでなくプログラミング言語の指定 (javascript, Python, etc) もできます。
-
-### 領域展開
-
-Zoltraak はプロンプトかた要件定義書を生成します。
-
-生成した要件定義書からさらにコード実装を行う処理を「領域術式」と呼びます。
-
-ラジオボタンの「はい」「いいえ」のどちらかを選択します。
-
-要件定義書だけ生成すればよい場合は「いいえ」（デフォルト）、コード実装まで行いたい場合は「はい」を選択します。
-
-※このオプションは reveal.js, PyPi, ソフトウェア制作などの事例で使うことをお勧めします。
-
-### 注意点
-
-- プロンプトが入力されていない場合エラーが出ます。
-- 生成まで数十秒以上かかることがあります。タスクが完了するまでお待ちください。
-- メイン画面に何も表示されない場合はアプリエラーが発生した可能性があります。お手数ですがご一報ください。
-
-## 例えばこのようなものが作れます
-
-**事業計画書の生成例：プロンプト「新車の販売を10%上げるための販売戦略」**
-![zoltraak-example-03](https://github.com/dai-motoki/zoltraak/assets/131997581/59247d07-e2fd-4cb4-8b3f-d77779930161)
-
-**クイズ書籍の生成例：プロンプト「あんぱんの雑学」**
-![zoltraak-example-05](https://github.com/dai-motoki/zoltraak/assets/131997581/d91b0a8c-c0e1-4516-b370-12b59bc1b9bf)
-
-**ウェブサイトのよくある質問(FAQ)を作りたい：プロンプト「急な来客時の簡単おもてなしレシピ」**
-![zoltraak-example-07](https://github.com/dai-motoki/zoltraak/assets/131997581/2186df44-6c9f-4548-a820-746611aaa3da)
-
-**プログラム（内部）生成例：プロンプト「テトリス風パズルゲーム」**
-![zoltraak-example-01](https://github.com/dai-motoki/zoltraak/assets/131997581/0cf87f95-09cf-4186-9b71-495a63dd75b9)
-
-**ドイツ語資料を日本語で生成：プロンプト「ドイツ人向け京都観光案内」**
-![zoltraak-example-04](https://github.com/dai-motoki/zoltraak/assets/131997581/58253bfb-2709-4f09-b544-72339013777f)
-
-**どのコンパイラを使えばよいかわからない場合**
-![zoltraak-example-06](https://github.com/dai-motoki/zoltraak/assets/131997581/d9c7b073-933b-474b-b135-88cd001742b4)
-
-## スマホからも使えます
-
-**iPhone で使ってみる**
-
-[iPhone デモ動画](https://github.com/dai-motoki/zoltraak/assets/131997581/080f618c-7422-42b1-bc6a-e0e642e633c8)
-
-**生成途中過程も表示（開発中の画面）**
-
-[生成過程も表示されるデモ動画](https://github.com/dai-motoki/zoltraak/assets/131997581/1f4b9ff7-1a9e-447e-aceb-a8e3c8ae80e9)
-
-## 背景を最後に少しだけ
-
-このページは本来 Streamlit を使用した Zoltraak UI のコード仮置き場です。
-
-コードの更新情報は Zoltraak Issues の方に記載しています。お手数ですがそちらをご覧ください。
-
-https://github.com/dai-motoki/zoltraak/issues/23
-
+This project is licensed under the MIT License. See the LICENSE file for details.

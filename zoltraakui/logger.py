@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 BACKUP_COUNT = 5
 LEVEL_DEBUG = 'debug'
 LEVEL_INFO = 'info'
-LOG_PATH = 'log'
+LOG_PATH = os.path.join(os.path.dirname(__file__), 'log')
 MAX_BYTES = 1000000
 
 
@@ -29,9 +29,10 @@ class PythonLogger:
         else:
             self.logger.setLevel(logging.DEBUG)
 
-        self.handler = RotatingFileHandler(filename=os.path.join(LOG_PATH, save_as),
-                                           maxBytes=MAX_BYTES,
-                                           backupCount=BACKUP_COUNT)
+        self.handler = RotatingFileHandler(
+            filename=os.path.join(LOG_PATH, save_as),
+            maxBytes=MAX_BYTES,
+            backupCount=BACKUP_COUNT)
 
         log_format = '[%(levelname)s][%(asctime)s] %(message)s'
 

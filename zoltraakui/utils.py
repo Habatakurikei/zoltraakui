@@ -1,120 +1,91 @@
-import os
 import re
 import shutil
-from io import StringIO
+from importlib import resources
+from pathlib import Path
 
-from config import config
+from zoltraakklein import ZoltraakKlein
+from zoltraakklein.yaml_manager import YAMLManager
+
+from config import PROGRESS_BAR_OFFSET
+from config import PROGRESS_EXPANSION
+from config import PROGRESS_GEN_RD
+from config import PROGRESS_NAMING
+from config import PROGRESS_READY
+from config import TEMPORARY_PATH
+from config import ZIP_PATH
 
 
-def find_user_compiler(uploaded_object):
+class Progress:
     '''
-    Return user compiler name from Streamlit UploadedFile object.
+    Manage percent and text for progress bar.
     '''
-    user_compiler = ''
+    def __init__(self, progress: int, limit: int):
+        self._progress = progress
+        self._limit = limit + PROGRESS_BAR_OFFSET
 
-    if uploaded_object is not None:
-        user_compiler = os.path.join(config['paths']['user_compiler'],
-                                     uploaded_object.name)
+    def next(self):
+        self._progress += 1
 
-    return user_compiler
+    def percent(self):
+        return round(self._progress / self._limit * 100)
+
+    def text(self):
+        global PROGRESS_EXPANSION
+        text = ":male_mage: "
+        if self._progress == 0:
+            text += PROGRESS_READY
+        elif self._progress == 1:
+            text += PROGRESS_NAMING
+        elif self._progress == 2:
+            text += PROGRESS_GEN_RD
+        elif 3 <= self._progress:
+            text += PROGRESS_EXPANSION.format(power=self._fire())
+        else:
+            text += "?"
+        return text + f" ({self.percent()} %)"
+
+    def _fire(self):
+        fire_list = [":fire:"] * (self._progress-PROGRESS_BAR_OFFSET)
+        return "".join(fire_list)
 
 
-def upload_user_compiler(uploaded_object):
-
-    if uploaded_object is not None:
-
-        save_as = find_user_compiler(uploaded_object)
-
-        to_read = uploaded_object.getvalue()
-        stringio = StringIO(to_read.decode('utf-8'))
-
-        with open(save_as, 'w', encoding='utf-8') as f:
-            f.write(stringio.read())
+def fetch_instruction(compiler: str):
+    '''
+    Fetch the instruction yaml document for the given compiler.
+    The library is under zoltraakklein site-package.
+    '''
+    instruction_path = resources.files('zoltraakklein.instructions')
+    instruction_path /= f'{compiler}.yaml'
+    return YAMLManager(str(instruction_path))
 
 
-def sanitize_prompt(prompt_org):
+def generate_zip(zk: ZoltraakKlein):
+    '''
+    Generate a zip file from the project.
+    '''
+    output_path = ZIP_PATH / zk.project_name
+    output_file = Path(str(output_path) + '.zip')
+    work_path = TEMPORARY_PATH / zk.project_name
+
+    if output_file.exists():
+        output_file.unlink()
+
+    if work_path.is_dir():
+        shutil.rmtree(work_path)
+
+    shutil.copytree(zk.project_path, work_path)
+    shutil.make_archive(output_path, 'zip', root_dir=work_path)
+    shutil.rmtree(work_path)
+
+    return output_file
+
+
+def sanitize_prompt(prompt_org: str):
+    '''
+    Remove all the special characters from the prompt to avoid errors.
+    '''
     sanitized_prompt = re.sub(r'\s+', ' ', prompt_org)
     sanitized_prompt = sanitized_prompt.replace(r'\n', '')
     sanitized_prompt = sanitized_prompt.replace(r'\r', '')
     sanitized_prompt = sanitized_prompt.replace(' ', r'\u0020')
     return sanitized_prompt.strip()
-
-
-def eligible_to_expand_domain(selected_compiler):
-    '''
-    Return if domain expansion option to add for given compiler
-    '''
-    ans = False
-
-    buff = config['constants']['eligible_compilers_to_expand']
-    list_eligible_compilers = buff.split('/')
-
-    if selected_compiler in list_eligible_compilers:
-        ans = True
-
-    return ans
-
-
-def delete_user_compiler(uploaded_object):
-    '''
-    Remove user compiler md file uploaded by user.
-    '''
-    user_compiler = find_user_compiler(uploaded_object)
-    if os.path.exists(user_compiler):
-        os.remove(user_compiler)
-
-
-def find_requirement_file(source):
-    '''
-    Return file name of generated requirement from zoltraak stdout sentence.
-    '''
-    candidate_requirement = source.split(':')[1]
-    candidate_requirement = candidate_requirement.split('.md')[0]
-    candidate_requirement = candidate_requirement.replace(' ', '')
-    candidate_requirement += '.md'
-    return candidate_requirement
-
-
-def find_code_path(generated_requirement):
-
-    to_replace = config['constants']['prefix_requirement']
-
-    project_name = os.path.split(generated_requirement)[-1]
-    project_name = project_name.replace(to_replace, '')
-    project_name = project_name.replace('.md', '')
-
-    to_find = os.path.join(config['paths']['codes'], project_name)
-
-    answer = to_find if os.path.isdir(to_find) else ''
-
-    return answer
-
-
-def generate_zip(generated_requirement, code_path):
-
-    project_name = os.path.split(code_path)[-1]
-
-    zip_location = config['paths']['zip']
-    work_path = os.path.join(zip_location, project_name)
-    save_as = work_path + '.zip'
-
-    # Make a work folder
-    if os.path.isdir(work_path):
-        shutil.rmtree(work_path)
-
-    if os.path.exists(save_as):
-        os.remove(save_as)
-
-    os.mkdir(work_path)
-
-    # Copy files, then execute zip
-    shutil.copy(generated_requirement, work_path)
-    shutil.copytree(code_path,
-                    os.path.join(work_path, config['paths']['codes']))
-
-    shutil.make_archive(work_path, 'zip', root_dir=work_path)
-
-    # Clean up work folder
-    shutil.rmtree(work_path)
-
-    return save_as
