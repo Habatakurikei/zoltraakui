@@ -37,7 +37,7 @@ This app is a part of Zoltraak project. See full list of features in [Zoltraak K
 
 3. Install the required dependencies:
    ```
-   pip install streamlit==1.37.1 zoltraakklein==1.0.3
+   pip install streamlit==1.38.0 zoltraakklein
    ```
 
 ## Usage
@@ -67,8 +67,8 @@ This app is a part of Zoltraak project. See full list of features in [Zoltraak K
 ## Dependencies
 
 - Python 3.9+
-- Streamlit 1.37.1
-- ZoltraakKlein 1.0.3
+- Streamlit 1.38.0+
+- ZoltraakKlein 1.0.6+
 
 ## Contributing
 

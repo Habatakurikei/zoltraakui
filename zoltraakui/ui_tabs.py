@@ -159,7 +159,9 @@ def show_rd(file_list: list[str]):
             set_llm_icon(path)
             st.write(f':memo: {path.name}')
             if path.is_file():
-                st.code(path.read_text(encoding="utf-8"), language="markdown")
+                st.code(path.read_text(encoding="utf-8"),
+                        language="markdown",
+                        wrap_lines=True)
             else:
                 st.error(TAB_IMAGE_NOT_FOUND_MSG)
 
