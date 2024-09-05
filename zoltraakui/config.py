@@ -122,7 +122,7 @@ LLM_GEN_RD = {
     },
     'google': {
         'provider': 'google',
-        'model': 'gemini-1.5-flash'
+        'model': 'gemini-1.5-flash-exp-0827'
     }
 }
 

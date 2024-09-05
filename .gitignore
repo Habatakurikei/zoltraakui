@@ -3,7 +3,7 @@ projects/
 venv/
 zip/
 zip_work/
-zoltraakui/debug.py
+zoltraakui/print.py
 google-chrome-stable_current_amd64.deb
 requirements.txt
 start.bat

@@ -70,6 +70,12 @@ This app is a part of Zoltraak project. See full list of features in [Zoltraak K
 - Streamlit 1.38.0+
 - ZoltraakKlein 1.0.6+
 
+## Debug Mode
+
+You can skip RD generation and start domain expansion as debug mode if RD and menu files are already generated.
+
+See [debug.py](https://github.com/Habatakurikei/zoltraakui/blob/main/zoltraakui/debug.py) for details.
+
 ## Contributing
 
 Any contributions are welcome.
